@@ -1,5 +1,14 @@
 #include "main.h"
-
+/*
+Important information
+use pros terminal
+commands:
+	pros c n [project name] (for a new project)
+	pros make clean (clears make or something, its important if make doesn't do anything)
+	pros build-compile-commands (project setup, use if headers fail)
+	Add "compileCommands": "${workspaceFolder}/compile_commands.json" in c_cpp_properties.json if headers still fail
+	pros mut (to upload to robot)
+*/
 /**
  * A callback function for LLEMU's center button.
  *
