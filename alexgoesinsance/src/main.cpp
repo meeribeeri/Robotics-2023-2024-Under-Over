@@ -16,9 +16,10 @@ commands:
  * "I was pressed!" and nothing.
  */
 // function override
+//Test
 void on_center_button() {
 	static bool pressed = false;
-	pressed = !pressed;
+	pressed = !pressed;s
 	if (pressed) {
 		pros::lcd::set_text(2, "I was pressed!");
 	} else {
