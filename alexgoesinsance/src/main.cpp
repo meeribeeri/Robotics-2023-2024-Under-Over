@@ -86,12 +86,14 @@ void autonomous() {}
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr_1(20);
-	pros::Motor left_mtr_2(19);
+	//For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
+	//higher port num is forward for the drive motors, reverse the lower ones
+	pros::Motor left_mtr_1(20,MOTOR_GEAR_BLUE,0);
+	pros::Motor left_mtr_2(19,MOTOR_GEAR_BLUE,1);
 	pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
-	pros::Motor right_mtr_1(11);
-	pros::Motor right_mtr_2(12);
+	pros::Motor right_mtr_1(12,MOTOR_GEAR_BLUE,0);
+	pros::Motor right_mtr_2(11,MOTOR_GEAR_BLUE,1);
 	pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
 
