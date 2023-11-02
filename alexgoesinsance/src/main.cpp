@@ -96,6 +96,8 @@ void opcontrol() {
 	pros::Motor right_mtr_2(11,MOTOR_GEAR_BLUE,1);
 	pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
+	pros::Motor intake(5,MOTOR_GEAR_GREEN,false);
+
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -105,6 +107,14 @@ void opcontrol() {
 
 		left_motors.move(master.get_analog(ANALOG_LEFT_Y));
 		right_motors.move(master.get_analog(ANALOG_RIGHT_Y));
+
+		if (master.get_digital(DIGITAL_R1)) {
+			intake.move(127);
+		} else if (master.get_digital(DIGITAL_L1)) {
+			intake.move(-127);
+		} else if (!intake.is_stopped) {
+			intake.move(0);
+		}
 
 		pros::delay(20);
 	}
