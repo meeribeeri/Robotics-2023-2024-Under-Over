@@ -88,12 +88,12 @@ void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	//For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-	pros::Motor left_mtr_1(20,MOTOR_GEAR_BLUE,0);
-	pros::Motor left_mtr_2(19,MOTOR_GEAR_BLUE,1);
+	pros::Motor left_mtr_1(1,MOTOR_GEAR_BLUE,0);
+	pros::Motor left_mtr_2(2,MOTOR_GEAR_BLUE,1);
 	pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
-	pros::Motor right_mtr_1(12,MOTOR_GEAR_BLUE,0);
-	pros::Motor right_mtr_2(11,MOTOR_GEAR_BLUE,1);
+	pros::Motor right_mtr_1(3,MOTOR_GEAR_BLUE,0);
+	pros::Motor right_mtr_2(4,MOTOR_GEAR_BLUE,1);
 	pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
 	pros::Motor intake(5,MOTOR_GEAR_GREEN,false);
@@ -112,7 +112,7 @@ void opcontrol() {
 			intake.move(127);
 		} else if (master.get_digital(DIGITAL_L1)) {
 			intake.move(-127);
-		} else if (!intake.is_stopped) {
+		} else if (!intake.is_stopped()) {
 			intake.move(0);
 		}
 
