@@ -99,6 +99,7 @@ void opcontrol() {
 	pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
 	pros::Motor intake(5,MOTOR_GEAR_GREEN,false);
+	pros::Motor catapult(6,MOTOR_GEAR_RED,false);
 
 
 	while (true) {
@@ -112,13 +113,20 @@ void opcontrol() {
 
 		if (master.get_digital(DIGITAL_R1)) {
 			intake.move(127);
-			std::cout << "Running intake";
+			std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "IN" << std::endl;
 		} else if (master.get_digital(DIGITAL_L1)) {
 			intake.move(-127);
-			std::cout << "Running outtake";
-		} else if (!intake.is_stopped()) {
-			intake.move(0);
-			std::cout << "Stopping motor";
+			std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
+		} else if (!intake.is_stopped() || master.get_digital(DIGITAL_R1) == 0 && master.get_digital(DIGITAL_L1) == 0) {
+			//intake.move(0);
+			intake.brake();
+			std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
+		}
+
+		if (master.get_digital(DIGITAL_R2)) {
+			catapult.move(127);
+		} else {
+			catapult.brake();
 		}
 		pros::delay(20);
 	}
