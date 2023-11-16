@@ -19,6 +19,10 @@ commands:
 // function override
 //Test
 //Test2.0
+
+//variables
+bool reverse = false;
+
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
@@ -107,20 +111,36 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
+		if (reverse) {
+			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y));
+			right_motors.move(-1*master.get_analog(ANALOG_RIGHT_Y));
+		} else {
+			left_motors.move(master.get_analog(ANALOG_LEFT_Y));
+			right_motors.move(master.get_analog(ANALOG_RIGHT_Y));
+		}
 
-		left_motors.move(master.get_analog(ANALOG_LEFT_Y));
-		right_motors.move(master.get_analog(ANALOG_RIGHT_Y));
+		if (master.get_digital_new_press(DIGITAL_Y)) {
+			switch (reverse) {
+				case false:
+					reverse = true;
+					break;
+				case true:
+					reverse = false;
+					break;
+			}
+		}
+		
 
 		if (master.get_digital(DIGITAL_R1)) {
 			intake.move(127);
-			std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "IN" << std::endl;
+			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "IN" << std::endl;
 		} else if (master.get_digital(DIGITAL_L1)) {
 			intake.move(-127);
-			std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
+			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
 		} else {
 			//intake.move(0);
 			intake.brake();
-			std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
+			//std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
 		}
 
 		if (master.get_digital(DIGITAL_R2)) {
