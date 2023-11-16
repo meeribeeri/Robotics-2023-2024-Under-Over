@@ -1,4 +1,5 @@
 #include "main.h"
+#include <iostream>
 /*
 Important information
 use pros terminal
@@ -111,12 +112,14 @@ void opcontrol() {
 
 		if (master.get_digital(DIGITAL_R1)) {
 			intake.move(127);
+			std::cout << "Running intake";
 		} else if (master.get_digital(DIGITAL_L1)) {
 			intake.move(-127);
+			std::cout << "Running outtake";
 		} else if (!intake.is_stopped()) {
 			intake.move(0);
+			std::cout << "Stopping motor";
 		}
-
 		pros::delay(20);
 	}
 }
