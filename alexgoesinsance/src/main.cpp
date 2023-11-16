@@ -117,7 +117,7 @@ void opcontrol() {
 		} else if (master.get_digital(DIGITAL_L1)) {
 			intake.move(-127);
 			std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
-		} else if (!intake.is_stopped() || master.get_digital(DIGITAL_R1) == 0 && master.get_digital(DIGITAL_L1) == 0) {
+		} else {
 			//intake.move(0);
 			intake.brake();
 			std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
