@@ -1,5 +1,6 @@
 #include "main.h"
 #include <iostream>
+#include <stdio.h>
 /*
 Important information
 use pros terminal
@@ -188,5 +189,12 @@ void recordActions() {
 
 		totalMilliseconds = totalMilliseconds + 20;
 		pros::delay(20);		
+	}
+
+	try {
+		std::FILE *file = fopen("/usd/binbenbose","w");
+		
+	} catch (...) {
+		std::cout << "Failed to write to file";
 	}
 }
