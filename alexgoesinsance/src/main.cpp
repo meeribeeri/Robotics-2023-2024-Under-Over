@@ -75,7 +75,10 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	
+
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -149,5 +152,18 @@ void opcontrol() {
 			catapult.brake();
 		}
 		pros::delay(20);
+	}
+}
+
+void recordActions() {
+	//1000ms per s
+	int totalMilliseconds = 0;
+	
+	while (totalMilliseconds < 1000 * 15) {
+		
+
+
+		totalMilliseconds = totalMilliseconds + 20;
+		pros::delay(20);		
 	}
 }
