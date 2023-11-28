@@ -28,8 +28,8 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(1,MOTOR_GEAR_BLUE,0);
-pros::Motor left_mtr_2(2,MOTOR_GEAR_BLUE,1);
+pros::Motor left_mtr_1(1,MOTOR_GEAR_BLUE,1);
+pros::Motor left_mtr_2(2,MOTOR_GEAR_BLUE,0);
 pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
 pros::Motor right_mtr_1(3,MOTOR_GEAR_BLUE,0);
@@ -37,7 +37,7 @@ pros::Motor right_mtr_2(4,MOTOR_GEAR_BLUE,1);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
 pros::Motor intake(5,MOTOR_GEAR_GREEN,false);
-pros::Motor catapult(6,MOTOR_GEAR_RED,false);
+pros::Motor catapult(11,MOTOR_GEAR_RED,false);
 
 void on_center_button() {
 	static bool pressed = false;
@@ -131,10 +131,10 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		if (reverse) {
-			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y));
+			left_motors.move(master.get_analog(ANALOG_LEFT_Y));
 			right_motors.move(-1*master.get_analog(ANALOG_RIGHT_Y));
 		} else {
-			left_motors.move(master.get_analog(ANALOG_LEFT_Y));
+			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y));
 			right_motors.move(master.get_analog(ANALOG_RIGHT_Y));
 		}
 
@@ -170,7 +170,7 @@ void opcontrol() {
 		pros::delay(20);
 	}
 }
-
+/*
 void recordActions() {
 	//1000ms per s
 	int totalMilliseconds = 0;
@@ -197,4 +197,4 @@ void recordActions() {
 	} catch (...) {
 		std::cout << "Failed to write to file";
 	}
-}
+}*/
