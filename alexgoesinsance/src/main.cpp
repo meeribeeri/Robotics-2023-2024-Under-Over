@@ -26,6 +26,8 @@ bool reverse = false;
 int spin = 180;
 int launchSpin = 10;
 int cataSpeed = 0;
+bool cataStopped = true;
+bool launchReady = false;
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -165,9 +167,9 @@ void opcontrol() {
 			//std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
 		}
 
-		if (master.get_digital(DIGITAL_R2)) {
+		if (master.get_digital(DIGITAL_R2) && cataStopped) {
 			catapult.move(127 - cataSpeed);
-		} else {
+		} else if (cataStopped) {
 			catapult.brake();
 		}
 		//Testing
@@ -199,11 +201,27 @@ void opcontrol() {
 		}
 
 		if (master.get_digital_new_press(DIGITAL_A)) {
+			catapult.tare_position();
 			catapult.move_absolute(spin,100);
+			cataStopped = false;
 		}
 		if (master.get_digital_new_press(DIGITAL_B)) {
-			catapult.move_relative(launchSpin,100);
 			catapult.tare_position();
+			catapult.move_relative(launchSpin,100);
+			cataStopped = false;
+		}
+
+		if (!cataStopped && !launchReady) {
+			if (catapult.get_position() > spin-5 && catapult.get_position() < spin+5) {
+				launchReady = true;
+			}
+		}
+
+		if (!cataStopped && launchReady) {
+			if (catapult.get_position() > launchSpin-5 && catapult.get_position() < launchSpin+5) {
+				launchReady = false;
+				cataStopped = true;
+			}
 		}
 		pros::delay(20);
 	}
