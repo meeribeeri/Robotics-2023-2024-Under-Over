@@ -23,13 +23,16 @@ commands:
 
 //variables
 bool reverse = false;
+int spin = 180;
+int launchSpin = 10;
+int cataSpeed = 0;
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0);
+pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,0);
+pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,1);
 pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
 pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0);
@@ -163,9 +166,44 @@ void opcontrol() {
 		}
 
 		if (master.get_digital(DIGITAL_R2)) {
-			catapult.move(127);
+			catapult.move(127 - cataSpeed);
 		} else {
 			catapult.brake();
+		}
+		//Testing
+		if (master.get_digital_new_press(DIGITAL_UP)) {
+			spin++;
+			std::cout << "Catapult Prepare num:: " << spin << std::endl;
+		}
+		if (master.get_digital_new_press(DIGITAL_DOWN)) {
+			spin--;
+			std::cout << "Catapult Prepare num:: " << spin << std::endl;
+		}
+
+		if (master.get_digital_new_press(DIGITAL_LEFT)) {
+			launchSpin--;
+			std::cout << "Catapult launch rotation:" << launchSpin << std::endl;
+		}
+		if (master.get_digital_new_press(DIGITAL_RIGHT)) {
+			launchSpin++;
+			std::cout << "Catapult launch rotation:" << launchSpin << std::endl;
+		}
+
+		if (master.get_digital_new_press(DIGITAL_L1)) {
+			cataSpeed--;
+			std::cout << "cataSpeed: " << cataSpeed << std::endl;
+		}
+		if (master.get_digital_new_press(DIGITAL_L2)) {
+			cataSpeed++;
+			std::cout << "cataSpeed: " << cataSpeed << std::endl;
+		}
+
+		if (master.get_digital_new_press(DIGITAL_A)) {
+			catapult.move_absolute(spin,100);
+		}
+		if (master.get_digital_new_press(DIGITAL_B)) {
+			catapult.move_relative(launchSpin,100);
+			catapult.tare_position();
 		}
 		pros::delay(20);
 	}
