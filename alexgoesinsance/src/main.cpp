@@ -211,18 +211,10 @@ void opcontrol() {
 			cataStopped = false;
 		}
 
-		if (!cataStopped && !launchReady) {
-			if (catapult.get_position() > spin-5 && catapult.get_position() < spin+5) {
-				launchReady = true;
-			}
+		if (master.get_digital_new_press(DIGITAL_X)) {
+			cataStopped = true;
 		}
-
-		if (!cataStopped && launchReady) {
-			if (catapult.get_position() > launchSpin-5 && catapult.get_position() < launchSpin+5) {
-				launchReady = false;
-				cataStopped = true;
-			}
-		}
+		//neko miko reimu aishiteru
 		pros::delay(20);
 	}
 }
