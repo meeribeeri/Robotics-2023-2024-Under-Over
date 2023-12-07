@@ -33,8 +33,8 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,0);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,1);
+pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1);
+pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0);
 pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
 pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0);
