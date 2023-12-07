@@ -28,6 +28,7 @@ int launchSpin = 10;
 int cataSpeed = 0;
 bool cataStopped = true;
 bool launchReady = false;
+bool currentPistonState = false;
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -43,6 +44,9 @@ pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
 pros::Motor intake(7,MOTOR_GEAR_GREEN,false);
 pros::Motor catapult(11,MOTOR_GEAR_RED,false);
+//pneumatics
+pros::ADIDigitalOut piston('A', currentPistonState);
+
 
 void on_center_button() {
 	static bool pressed = false;
@@ -65,6 +69,8 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	//port is from A-H, the bool is init state
 }
 
 /**
@@ -171,6 +177,19 @@ void opcontrol() {
 			catapult.move(127 - cataSpeed);
 		} else if (cataStopped) {
 			catapult.brake();
+		}
+		//pneumatics
+		if (master.get_digital_new_press(DIGITAL_L2)) {
+			switch (currentPistonState) {
+				case true:
+					piston.set_value(false);
+					currentPistonState = false;
+					break;
+				case false:
+					piston.set_value(true);
+					currentPistonState = true;
+					break;
+			}
 		}
 		//Testing
 		if (master.get_digital_new_press(DIGITAL_UP)) {
