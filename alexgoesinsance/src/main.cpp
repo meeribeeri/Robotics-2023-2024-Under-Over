@@ -23,12 +23,22 @@ commands:
 
 //variables
 bool reverse = false;
-int spin = 180;
-int launchSpin = 10;
+int spin = 1150;
+int launchSpin = 200;
 int cataSpeed = 0;
-bool cataStopped = true;
-bool launchReady = false;
+bool intakeReady = false;
 bool currentPistonState = false;
+int autonNormalSpeed = 100;
+
+void forward(double units);
+void forward(double units, int volts);
+
+void sleft(double units);
+void sleft(double units, int volts);
+
+void sright(double units);
+void sright(double units, int volts);
+
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -103,8 +113,10 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	
-
+	forward(10);
+	sleft(10);
+	forward(-10);
+	sright(10);
 }
 
 /**
@@ -173,9 +185,10 @@ void opcontrol() {
 			//std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
 		}
 
-		if (master.get_digital(DIGITAL_R2) && cataStopped) {
+		if (master.get_digital(DIGITAL_R2)) {
 			catapult.move(127 - cataSpeed);
-		} else if (cataStopped) {
+			intakeReady = false;
+		} else if (!intakeReady) {
 			catapult.brake();
 		}
 		//pneumatics
@@ -191,77 +204,48 @@ void opcontrol() {
 					break;
 			}
 		}
-		//Testing
-		if (master.get_digital_new_press(DIGITAL_UP)) {
-			spin++;
-			std::cout << "Catapult Prepare num:: " << spin << std::endl;
-		}
-		if (master.get_digital_new_press(DIGITAL_DOWN)) {
-			spin--;
-			std::cout << "Catapult Prepare num:: " << spin << std::endl;
-		}
 
-		if (master.get_digital_new_press(DIGITAL_LEFT)) {
-			launchSpin--;
-			std::cout << "Catapult launch rotation:" << launchSpin << std::endl;
-		}
-		if (master.get_digital_new_press(DIGITAL_RIGHT)) {
-			launchSpin++;
-			std::cout << "Catapult launch rotation:" << launchSpin << std::endl;
-		}
-
-		if (master.get_digital_new_press(DIGITAL_L1)) {
-			cataSpeed--;
-			std::cout << "cataSpeed: " << cataSpeed << std::endl;
-		}
-		if (master.get_digital_new_press(DIGITAL_L2)) {
-			cataSpeed++;
-			std::cout << "cataSpeed: " << cataSpeed << std::endl;
-		}
-
-		if (master.get_digital_new_press(DIGITAL_A)) {
+		//launch Buttons
+		if (master.get_digital_new_press(DIGITAL_A) && !intakeReady) {
+			intakeReady = true;
 			catapult.tare_position();
 			catapult.move_absolute(spin,100);
-			cataStopped = false;
-		}
-		if (master.get_digital_new_press(DIGITAL_B)) {
+		} else if (master.get_digital_new_press(DIGITAL_A) && intakeReady) {
 			catapult.tare_position();
 			catapult.move_relative(launchSpin,100);
-			cataStopped = false;
-		}
-
-		if (master.get_digital_new_press(DIGITAL_X)) {
-			cataStopped = true;
+			intakeReady = false;
 		}
 		//neko miko reimu aishiteru
 		pros::delay(20);
 	}
 }
-/*
-void recordActions() {
-	//1000ms per s
-	int totalMilliseconds = 0;
-	std::array<std::array<int,5>,(int)((1000 * 15)/20)> motorVoltagesAndCommands;
-	int currentArray;
-	
-	while (totalMilliseconds < 1000 * 15) {
-		currentArray = (int)(1+(totalMilliseconds/20));
-		motorVoltagesAndCommands[currentArray][0] = master.get_analog(ANALOG_LEFT_Y);
-		motorVoltagesAndCommands[currentArray][1] = master.get_analog(ANALOG_RIGHT_Y);
 
-		motorVoltagesAndCommands[currentArray][2] = intake.get_voltage();
-		motorVoltagesAndCommands[currentArray][3] = catapult.get_voltage();
+void forward(double units) {
+	left_motors.move_relative(units, autonNormalSpeed);
+	right_motors.move_relative(units,autonNormalSpeed);
+}
 
-		motorVoltagesAndCommands[currentArray][4] = reverse;
+void forward(double units, int vel) {
+	left_motors.move_relative(units, vel);
+	right_motors.move_relative(units,vel);
+}
 
-		totalMilliseconds = totalMilliseconds + 20;
-		pros::delay(20);		
-	}
+void sleft(double units) {
+	left_motors.move_relative(units, autonNormalSpeed);
+	right_motors.move_relative(-units,autonNormalSpeed);
+}
 
-	try {
-		std::FILE *file = fopen("/usd/binbenbose","w");
-		
-	} catch (...) {
-		std::cout << "Failed to write to file";
-	}
-}*/
+void sleft(double units, int vel) {
+	left_motors.move_relative(units, vel);
+	right_motors.move_relative(-units,vel);
+}
+
+void sright(double units) {
+	left_motors.move_relative(-units, autonNormalSpeed);
+	right_motors.move_relative(units,autonNormalSpeed);
+}
+
+void sright(double units, int vel) {
+	left_motors.move_relative(-units, vel);
+	right_motors.move_relative(units,vel);
+}
