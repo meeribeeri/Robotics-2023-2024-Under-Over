@@ -25,8 +25,9 @@ commands:
 bool reverse = false;
 int spin = 1150;
 int launchSpin = 200;
-int cataSpeed = 0;
+int driveVoltageReduction = 0;
 bool intakeReady = false;
+bool manualCataControl = true;
 bool currentPistonState = false;
 int autonNormalSpeed = 100;
 
@@ -39,7 +40,9 @@ void sleft(double units, int volts);
 void sright(double units);
 void sright(double units, int volts);
 
+void updateScreen();
 
+//controller
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
@@ -55,7 +58,9 @@ pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 pros::Motor intake(7,MOTOR_GEAR_GREEN,false);
 pros::Motor catapult(11,MOTOR_GEAR_RED,false);
 //pneumatics
-pros::ADIDigitalOut piston('A', currentPistonState);
+pros::ADIDigitalOut leftWing('A', currentPistonState);
+pros::ADIDigitalOut rightWing('B',currentPistonState);
+
 
 
 void on_center_button() {
@@ -113,10 +118,14 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	forward(10);
-	sleft(10);
-	forward(-10);
-	sright(10);
+	left_motors.move(90);
+	right_motors.move(90);
+	intake.move(60);
+	pros::delay(2100);
+	left_motors.brake();
+	right_motors.brake();
+	
+	
 }
 
 /**
@@ -154,11 +163,11 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		if (reverse) {
-			left_motors.move(master.get_analog(ANALOG_LEFT_Y));
-			right_motors.move(-1*master.get_analog(ANALOG_RIGHT_Y));
+			left_motors.move(master.get_analog(ANALOG_LEFT_Y) + driveVoltageReduction);
+			right_motors.move(-1*master.get_analog(ANALOG_RIGHT_Y) - driveVoltageReduction);
 		} else {
-			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y));
-			right_motors.move(master.get_analog(ANALOG_RIGHT_Y));
+			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y) - driveVoltageReduction);
+			right_motors.move(master.get_analog(ANALOG_RIGHT_Y) + driveVoltageReduction);
 		}
 
 		if (master.get_digital_new_press(DIGITAL_Y)) {
@@ -186,37 +195,51 @@ void opcontrol() {
 		}
 
 		if (master.get_digital(DIGITAL_R2)) {
-			catapult.move(127 - cataSpeed);
+			catapult.move(127);
 			intakeReady = false;
-		} else if (!intakeReady) {
+			manualCataControl = true;
+		} else if (manualCataControl) {
 			catapult.brake();
 		}
 		//pneumatics
 		if (master.get_digital_new_press(DIGITAL_L2)) {
 			switch (currentPistonState) {
 				case true:
-					piston.set_value(false);
 					currentPistonState = false;
+					leftWing.set_value(false);
+					rightWing.set_value(false);
 					break;
 				case false:
-					piston.set_value(true);
 					currentPistonState = true;
+					leftWing.set_value(true);
+					rightWing.set_value(true);
 					break;
 			}
 		}
 
 		//launch Buttons
-		if (master.get_digital_new_press(DIGITAL_A) && !intakeReady) {
-			intakeReady = true;
-			catapult.tare_position();
-			catapult.move_absolute(spin,100);
-		} else if (master.get_digital_new_press(DIGITAL_A) && intakeReady) {
-			catapult.tare_position();
-			catapult.move_relative(launchSpin,100);
-			intakeReady = false;
+		if (master.get_digital_new_press(DIGITAL_A)) {
+			if (!intakeReady) {
+				manualCataControl = false;
+				intakeReady = true;
+				catapult.tare_position();
+				catapult.move_absolute(spin,200);
+			} else {
+				catapult.tare_position();
+				catapult.move_relative(launchSpin,100);
+				intakeReady = false;
+			}
+		}
+
+		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltageReduction < 127) {
+			driveVoltageReduction++;
+		}
+
+		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltageReduction > 0) {
+			driveVoltageReduction--;
 		}
 		//neko miko reimu aishiteru
-		pros::delay(20);
+		pros::delay(10);
 	}
 }
 
