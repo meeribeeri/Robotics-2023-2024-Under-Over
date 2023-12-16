@@ -11,12 +11,6 @@ commands:
 	Add "compileCommands": "${workspaceFolder}/compile_commands.json" in c_cpp_properties.json if headers still fail
 	pros mut (to upload to robot)
 */
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
 // function override
 //Test
 //Test2.0
@@ -25,7 +19,7 @@ commands:
 bool reverse = false;
 int spin = 1150;
 int launchSpin = 200;
-int driveVoltageReduction = 0;
+double driveVoltagePercent = 1.00;
 bool intakeReady = false;
 bool manualCataControl = true;
 bool currentPistonState = false;
@@ -40,23 +34,25 @@ void sleft(double units, int volts);
 void sright(double units);
 void sright(double units, int volts);
 
-void updateScreen();
+void elevationWarning(void* param);
 
+void competitionsAuton();
+void skillAuton();
 //controller
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0);
+pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
 
-pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0);
-pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1);
+pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
+pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
 
-pros::Motor intake(7,MOTOR_GEAR_GREEN,false);
-pros::Motor catapult(11,MOTOR_GEAR_RED,false);
+pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
+pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
 //pneumatics
 pros::ADIDigitalOut leftWing('A', currentPistonState);
 pros::ADIDigitalOut rightWing('B',currentPistonState);
@@ -84,7 +80,6 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
-
 	//port is from A-H, the bool is init state
 }
 
@@ -118,16 +113,40 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	//use pros make, then pros upload --slot 2
+	//this is only for skill code, comp code use pros mut
+	
+	//competitionsAuton();
+	skillAuton();
+}
+
+void competitionsAuton() {
 	left_motors.move(90);
-	right_motors.move(90);
-	intake.move(60);
+	right_motors.move(-90);
+	intake.move(90);
 	pros::delay(2100);
 	left_motors.brake();
 	right_motors.brake();
-	
-	
+	pros::delay(1000);
+	intake.brake();
+	left_motors.move(90);
+	right_motors.move(90);
+	pros::delay(1000);
+	left_motors.move(90);
+	right_motors.move(-90);
+	pros::delay(2100);
+	left_motors.brake();
+	right_motors.brake();
 }
 
+void skillAuton() {
+	while (true) {
+		catapult.move_relative(spin + 110,200);
+		pros::delay(1000);
+		catapult.move_relative(launchSpin-10,100);
+		pros::delay(100);
+	}
+}
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -145,17 +164,8 @@ void opcontrol() {
 	
 	//For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-	/*pros::Motor left_mtr_1(1,MOTOR_GEAR_BLUE,0);
-	pros::Motor left_mtr_2(2,MOTOR_GEAR_BLUE,1);
-	pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
-
-	pros::Motor right_mtr_1(3,MOTOR_GEAR_BLUE,0);
-	pros::Motor right_mtr_2(4,MOTOR_GEAR_BLUE,1);
-	pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
-
-	pros::Motor intake(5,MOTOR_GEAR_GREEN,false);
-	pros::Motor catapult(6,MOTOR_GEAR_RED,false);*/
-
+	
+	pros::Task task(elevationWarning,(void*)"null");
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -163,11 +173,11 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		if (reverse) {
-			left_motors.move(master.get_analog(ANALOG_LEFT_Y) + driveVoltageReduction);
-			right_motors.move(-1*master.get_analog(ANALOG_RIGHT_Y) - driveVoltageReduction);
+			left_motors.move((int)(master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
+			right_motors.move((int)(-1*master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
 		} else {
-			left_motors.move(-1*master.get_analog(ANALOG_LEFT_Y) - driveVoltageReduction);
-			right_motors.move(master.get_analog(ANALOG_RIGHT_Y) + driveVoltageReduction);
+			left_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent));
+			right_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent));
 		}
 
 		if (master.get_digital_new_press(DIGITAL_Y)) {
@@ -223,7 +233,7 @@ void opcontrol() {
 				manualCataControl = false;
 				intakeReady = true;
 				catapult.tare_position();
-				catapult.move_absolute(spin,200);
+				catapult.move_relative(spin,200);
 			} else {
 				catapult.tare_position();
 				catapult.move_relative(launchSpin,100);
@@ -231,12 +241,15 @@ void opcontrol() {
 			}
 		}
 
-		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltageReduction < 127) {
-			driveVoltageReduction++;
+		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltagePercent < 1) {
+			driveVoltagePercent = driveVoltagePercent + 0.05;
 		}
 
-		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltageReduction > 0) {
-			driveVoltageReduction--;
+		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltagePercent > 0.05) {
+			driveVoltagePercent = driveVoltagePercent - 0.05;
+		}
+		if (master.get_digital_new_press(DIGITAL_X)) {
+			driveVoltagePercent = 1.00;
 		}
 		//neko miko reimu aishiteru
 		pros::delay(10);
@@ -245,30 +258,37 @@ void opcontrol() {
 
 void forward(double units) {
 	left_motors.move_relative(units, autonNormalSpeed);
-	right_motors.move_relative(units,autonNormalSpeed);
+	right_motors.move_relative(-units,autonNormalSpeed);
 }
 
 void forward(double units, int vel) {
 	left_motors.move_relative(units, vel);
-	right_motors.move_relative(units,vel);
+	right_motors.move_relative(-units,vel);
 }
 
 void sleft(double units) {
 	left_motors.move_relative(units, autonNormalSpeed);
-	right_motors.move_relative(-units,autonNormalSpeed);
+	right_motors.move_relative(units,autonNormalSpeed);
 }
 
 void sleft(double units, int vel) {
 	left_motors.move_relative(units, vel);
-	right_motors.move_relative(-units,vel);
+	right_motors.move_relative(units,vel);
 }
 
 void sright(double units) {
 	left_motors.move_relative(-units, autonNormalSpeed);
-	right_motors.move_relative(units,autonNormalSpeed);
+	right_motors.move_relative(-units,autonNormalSpeed);
 }
 
 void sright(double units, int vel) {
 	left_motors.move_relative(-units, vel);
-	right_motors.move_relative(units,vel);
+	right_motors.move_relative(-units,vel);
+}
+
+void elevationWarning(void* param) {
+	pros::delay((60+35)*1000);
+	master.rumble("- -");
+	pros::delay(5*1000);
+	master.rumble("--------");
 }
