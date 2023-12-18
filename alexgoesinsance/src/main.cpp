@@ -140,11 +140,14 @@ void competitionsAuton() {
 }
 
 void skillAuton() {
+	int shots = 0;
 	while (true) {
 		catapult.move_relative(spin + 110,200);
 		pros::delay(1000);
 		catapult.move_relative(launchSpin-10,100);
 		pros::delay(100);
+		shots++;
+		if (shots)
 	}
 }
 /**
