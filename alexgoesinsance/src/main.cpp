@@ -101,8 +101,6 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-	int compAutonRange[4] = {25,125,25,75};
-	int skillAutonRange[4] = {150,250,100,150};
 
 	//pros::lcd::register_btn0_cb
 }
