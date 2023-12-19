@@ -17,13 +17,14 @@ commands:
 
 //variables
 bool reverse = false;
-int spin = 1150;
-int launchSpin = 200;
+int spin = 165 * 3;
+int launchSpin = 15 * 3;
 double driveVoltagePercent = 1.00;
 bool intakeReady = false;
 bool manualCataControl = true;
 bool currentPistonState = false;
 int autonNormalSpeed = 100;
+int autonNumber = 0;
 
 void forward(double units);
 void forward(double units, int volts);
@@ -57,6 +58,8 @@ pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
 pros::ADIDigitalOut leftWing('A', currentPistonState);
 pros::ADIDigitalOut rightWing('B',currentPistonState);
 
+//vision sensor for autons
+pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
 
 
 void on_center_button() {
@@ -77,9 +80,7 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
 	//port is from A-H, the bool is init state
 }
 
@@ -99,7 +100,12 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	int compAutonRange[4] = {25,125,25,75};
+	int skillAutonRange[4] = {150,250,100,150};
+
+	//pros::lcd::register_btn0_cb
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -115,9 +121,14 @@ void competition_initialize() {}
 void autonomous() {
 	//use pros make, then pros upload --slot 2
 	//this is only for skill code, comp code use pros mut
-	
-	//competitionsAuton();
-	skillAuton();
+	switch (autonNumber) {
+		case 0:
+			competitionsAuton();
+			break;
+		case 1:
+			skillAuton();
+			break;
+	}
 }
 
 void competitionsAuton() {
@@ -140,15 +151,13 @@ void competitionsAuton() {
 }
 
 void skillAuton() {
-	int shots = 0;
-	while (true) {
-		catapult.move_relative(spin + 110,200);
-		pros::delay(1000);
-		catapult.move_relative(launchSpin-10,100);
-		pros::delay(100);
-		shots++;
-		if (shots)
+	for (int i = 0; i < 45; i++) {
+		catapult.move_relative(spin,100);
+		pros::delay(700);
+		catapult.move_relative(launchSpin,100);
+		pros::delay(300);
 	}
+	//drive to the middle barrier & determine where to best go for the most triballs pushed in
 }
 /**
  * Runs the operator control code. This function will be started in its own task
