@@ -28,15 +28,6 @@ bool manualCataControl = true;
 bool currentPistonState = false;
 int autonNumber = 0;
 
-void forward(double units);
-void forward(double units, int volts);
-
-void sleft(double units);
-void sleft(double units, int volts);
-
-void sright(double units);
-void sright(double units, int volts);
-
 void elevationWarning(void* param);
 
 void competitionsAuton();
