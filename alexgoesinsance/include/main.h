@@ -59,6 +59,7 @@
  * that they can be called from user code (i.e. calling autonomous from a
  * button press in opcontrol() for testing purposes).
  */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -68,31 +69,6 @@ void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
 
-pros::Controller master(pros::E_CONTROLLER_MASTER);
-
-//For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
-	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
-
-pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
-
-pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
-pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
-//pneumatics
-pros::ADIDigitalOut leftWing('A', false);
-pros::ADIDigitalOut rightWing('B',false);
-//vision sensor for autons
-pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
-//wings
-void setWings(bool state);
-//Autons
-void offensiveAuton();
-void defensiveAuton();
-void skillAuton();
 
 #ifdef __cplusplus
 }

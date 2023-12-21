@@ -1,12 +1,11 @@
-#include "main.h"
-#include <iostream>
-#include <stdio.h>
+#include "robot.h"
+
 /*
 Important information
 use pros terminal
-commands:
 	pros c n [project name] (for a new project)
 	pros make clean (clears make or something, its important if make doesn't do anything)
+	pros make : builds the program
 	pros build-compile-commands (project setup, use if headers fail)
 	Add "compileCommands": "${workspaceFolder}/compile_commands.json" in c_cpp_properties.json if headers still fail
 	pros mut (to upload to robot)
@@ -14,11 +13,15 @@ commands:
 // function override
 //Test
 //Test2.0
-
+//components
+extern pros::Controller master;
+extern pros::Motor_Group left_motors;
+extern pros::Motor_Group right_motors;
+extern pros::Motor intake;
+extern pros::Motor catapult;
+extern pros::Vision vision;
 //variables
 bool reverse = false;
-int spin = 165 * 3;
-int launchSpin = 15 * 3;
 double driveVoltagePercent = 1.00;
 bool intakeReady = false;
 bool manualCataControl = true;
@@ -48,13 +51,13 @@ void autonChangeSkill() {
 
 void autonChangeOffence() {
 	pros::lcd::clear_line(2);
-	pros::lcd::set_text(2, "Offensive Auton Selected");
+	pros::lcd::set_text(2, "Offensive(Shoot Side) Auton Selected");
 	autonNumber = 0;
 }
 
 void autonChangeDefence() {
 	pros::lcd::clear_line(2);
-	pros::lcd::set_text(2, "Defensive Auton Selected");
+	pros::lcd::set_text(2, "Defensive(Net Side) Auton Selected");
 	autonNumber = 1;
 }
 
@@ -206,10 +209,10 @@ void opcontrol() {
 				manualCataControl = false;
 				intakeReady = true;
 				catapult.tare_position();
-				catapult.move_relative(spin,200);
+				catapult.move_relative(CATAPULT_INITIAL_SPIN,200);
 			} else {
 				catapult.tare_position();
-				catapult.move_relative(launchSpin,100);
+				catapult.move_relative(CATAPULT_LAUNCH_SPIN,100);
 				intakeReady = false;
 			}
 		}
