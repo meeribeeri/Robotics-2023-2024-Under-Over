@@ -23,7 +23,6 @@ double driveVoltagePercent = 1.00;
 bool intakeReady = false;
 bool manualCataControl = true;
 bool currentPistonState = false;
-int autonNormalSpeed = 100;
 int autonNumber = 0;
 
 void forward(double units);
@@ -40,36 +39,23 @@ void elevationWarning(void* param);
 void competitionsAuton();
 void skillAuton();
 //controller
-pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-//For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
-	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
+void autonChangeSkill() {
+	pros::lcd::clear_line(2);
+	pros::lcd::set_text(2, "Skills Auton Selected");
+	autonNumber = 2;
+}
 
-pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
+void autonChangeOffence() {
+	pros::lcd::clear_line(2);
+	pros::lcd::set_text(2, "Offensive Auton Selected");
+	autonNumber = 0;
+}
 
-pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
-pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
-//pneumatics
-pros::ADIDigitalOut leftWing('A', currentPistonState);
-pros::ADIDigitalOut rightWing('B',currentPistonState);
-
-//vision sensor for autons
-pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
-
-
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+void autonChangeDefence() {
+	pros::lcd::clear_line(2);
+	pros::lcd::set_text(2, "Defensive Auton Selected");
+	autonNumber = 1;
 }
 
 /**
@@ -80,6 +66,10 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
+
+	pros::lcd::register_btn0_cb(autonChangeOffence);
+	pros::lcd::register_btn1_cb(autonChangeDefence);
+	pros::lcd::register_btn2_cb(autonChangeSkill);
 
 	//port is from A-H, the bool is init state
 }
@@ -121,42 +111,18 @@ void autonomous() {
 	//this is only for skill code, comp code use pros mut
 	switch (autonNumber) {
 		case 0:
-			competitionsAuton();
+			offensiveAuton();
 			break;
 		case 1:
+			defensiveAuton();
+			break;
+		case 2:
 			skillAuton();
 			break;
+
 	}
 }
 
-void competitionsAuton() {
-	left_motors.move(90);
-	right_motors.move(-90);
-	intake.move(90);
-	pros::delay(2100);
-	left_motors.brake();
-	right_motors.brake();
-	pros::delay(1000);
-	intake.brake();
-	left_motors.move(90);
-	right_motors.move(90);
-	pros::delay(1000);
-	left_motors.move(90);
-	right_motors.move(-90);
-	pros::delay(2100);
-	left_motors.brake();
-	right_motors.brake();
-}
-
-void skillAuton() {
-	for (int i = 0; i < 45; i++) {
-		catapult.move_relative(spin,100);
-		pros::delay(700);
-		catapult.move_relative(launchSpin,100);
-		pros::delay(300);
-	}
-	//drive to the middle barrier & determine where to best go for the most triballs pushed in
-}
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -226,15 +192,12 @@ void opcontrol() {
 			switch (currentPistonState) {
 				case true:
 					currentPistonState = false;
-					leftWing.set_value(false);
-					rightWing.set_value(false);
 					break;
 				case false:
 					currentPistonState = true;
-					leftWing.set_value(true);
-					rightWing.set_value(true);
 					break;
 			}
+			setWings(currentPistonState);
 		}
 
 		//launch Buttons
@@ -264,36 +227,6 @@ void opcontrol() {
 		//neko miko reimu aishiteru
 		pros::delay(10);
 	}
-}
-
-void forward(double units) {
-	left_motors.move_relative(units, autonNormalSpeed);
-	right_motors.move_relative(-units,autonNormalSpeed);
-}
-
-void forward(double units, int vel) {
-	left_motors.move_relative(units, vel);
-	right_motors.move_relative(-units,vel);
-}
-
-void sleft(double units) {
-	left_motors.move_relative(units, autonNormalSpeed);
-	right_motors.move_relative(units,autonNormalSpeed);
-}
-
-void sleft(double units, int vel) {
-	left_motors.move_relative(units, vel);
-	right_motors.move_relative(units,vel);
-}
-
-void sright(double units) {
-	left_motors.move_relative(-units, autonNormalSpeed);
-	right_motors.move_relative(-units,autonNormalSpeed);
-}
-
-void sright(double units, int vel) {
-	left_motors.move_relative(-units, vel);
-	right_motors.move_relative(-units,vel);
 }
 
 void elevationWarning(void* param) {
