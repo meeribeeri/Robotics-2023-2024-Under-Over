@@ -11,8 +11,7 @@ use pros terminal
 	pros mut (to upload to robot)
 */
 // function override
-//Test
-//Test2.0
+
 //components
 extern pros::Controller master;
 extern pros::Motor_Group left_motors;
