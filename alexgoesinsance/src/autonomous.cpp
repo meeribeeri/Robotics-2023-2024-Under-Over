@@ -9,11 +9,13 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 	//higher port num is forward for the drive motors, reverse the lower ones
 pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group left_motors({left_mtr_1,left_mtr_2});
+pros::Motor left_mtr_3(11,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor_Group left_motors({left_mtr_1,left_mtr_2,left_mtr_3});
 
 pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
 pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor_Group right_motors({right_mtr_1,right_mtr_2});
+pros::Motor right_mtr_3(12,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor_Group right_motors({right_mtr_1,right_mtr_2,right_mtr_3});
 
 pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
 pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
