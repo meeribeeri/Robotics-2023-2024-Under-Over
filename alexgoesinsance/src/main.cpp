@@ -218,6 +218,7 @@ void opcontrol() {
 			driveVoltagePercent = 1.00;
 		}
 		//neko miko reimu aishiteru
+		//Dolan was here, Touhou is kill
 		pros::delay(10);
 	}
 }
