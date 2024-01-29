@@ -7,14 +7,14 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 //For motors, first num is port, second is gear(rgb), third is reverse, 1 = reversed 0 = normal
 	//higher port num is forward for the drive motors, reverse the lower ones
-pros::Motor left_mtr_1(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor left_mtr_2(3,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
-pros::Motor left_mtr_3(11,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr_1(1,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr_2(2,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor left_mtr_3(3,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group left_motors({left_mtr_1,left_mtr_2,left_mtr_3});
 
 pros::Motor right_mtr_1(4,MOTOR_GEAR_BLUE,0,MOTOR_ENCODER_DEGREES);
 pros::Motor right_mtr_2(5,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
-pros::Motor right_mtr_3(12,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
+pros::Motor right_mtr_3(6,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2,right_mtr_3});
 
 pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
