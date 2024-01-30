@@ -17,7 +17,7 @@ pros::Motor right_mtr_2(8,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor right_mtr_3(9,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2,right_mtr_3});
 
-pros::Motor intake(7,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
+pros::Motor intake(10,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
 pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
 //pneumatics
 pros::ADIDigitalOut leftWing('A', false);
