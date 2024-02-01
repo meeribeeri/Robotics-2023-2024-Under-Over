@@ -47,9 +47,8 @@ void offensiveAuton() { //shoot side
 	left_motors.move(90);
 	right_motors.move(90);
 	pros::delay(1000);
-	left_motors.move(90);
-	right_motors.move(-90);
-	pros::delay(2100);
+	sright(MOTOR_RIGHT_TURN*2);
+	pros::delay(AUTON_COMMAND_DELAY);
 	left_motors.brake();
 	right_motors.brake();
     setWings(true);
@@ -105,8 +104,8 @@ void skillAuton() {
     left_motors.move(100);
 	right_motors.move(60);
 	pros::delay(1000);
-	left_motors.move(0);
-	right_motors.move(0);
+	left_motors.brake();
+	right_motors.brake();
 	pros::delay(AUTON_COMMAND_DELAY);
 	forward(1500);
 	//drive to the side entrance & push as many balls as possible in
