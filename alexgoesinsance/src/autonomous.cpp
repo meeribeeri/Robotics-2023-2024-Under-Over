@@ -84,13 +84,32 @@ void skillAuton() {
 		catapult.move_relative(15*3,100);
 		pros::delay(300);
 	}
+	pros::delay(AUTON_COMMAND_DELAY);
     setWings(false);
-    forward(3000);
-    sright(MOTOR_RIGHT_TURN / 2);
-    forward(750);
+    //forward();
+    sleft(MOTOR_RIGHT_TURN / 2);
+	pros::delay(AUTON_COMMAND_DELAY);
+    forward(-3000);
+	pros::delay(AUTON_COMMAND_DELAY);
+	sright(MOTOR_RIGHT_TURN);
+	pros::delay(AUTON_COMMAND_DELAY);
+	forward(720);
+	pros::delay(AUTON_COMMAND_DELAY);
+	sleft(MOTOR_RIGHT_TURN);
+	pros::delay(AUTON_COMMAND_DELAY);
+	forward(1500);
+	pros::delay(AUTON_COMMAND_DELAY);
+	sright(MOTOR_RIGHT_TURN);
+	pros::delay(AUTON_COMMAND_DELAY);
     setWings(true);
-    forward(3000);
-	//drive to the middle barrier & determine where to best go for the most triballs pushed in
+    left_motors.move(100);
+	right_motors.move(60);
+	pros::delay(1000);
+	left_motors.move(0);
+	right_motors.move(0);
+	pros::delay(AUTON_COMMAND_DELAY);
+	forward(1500);
+	//drive to the side entrance & push as many balls as possible in
 }
 
 

@@ -142,8 +142,8 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		if (reverse) {
-			left_motors.move((int)(master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
-			right_motors.move((int)(-1*master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
+			left_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
+			right_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
 		} else {
 			left_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent));
 			right_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent));
