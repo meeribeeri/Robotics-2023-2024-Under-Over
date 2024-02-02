@@ -31,7 +31,7 @@ bool isComp = false;
 void elevationWarning(void* param);
 
 void competitionsAuton();
-void skillAuton();
+//void skillAuton();
 //controller
 
 void autonChangeSkill() {
@@ -86,6 +86,7 @@ void disabled() {}
  */
 void competition_initialize() {
 	isComp = true;
+	std::cout << "HLEP";
 	//pros::lcd::register_btn0_cb
 }
 
@@ -104,8 +105,11 @@ void autonomous() {
 	//use pros make, then pros upload --slot 2
 	//this is only for skill code, comp code use pros mut
 	//ignore the above two comments
-	//skillAuton();
+	skillAuton();
+	//offensiveAuton();
+	//defensiveAuton();
 	/*if (isComp) {
+		std::cout << "HLEP";
 		switch (autonNumber) {
 			case 0:
 				offensiveAuton();
@@ -116,6 +120,7 @@ void autonomous() {
 		}
 	}
 	else {
+		std::cout << "HLEPAAAA";
 		skillAuton();
 	}*/
 
@@ -148,11 +153,11 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
 		if (reverse) { //reverse drive
-			left_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
-			right_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
+			left_motors.move((int)(master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
+			right_motors.move((int)(-1*master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
 		} else { //regular drive
-			left_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent));
-			right_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent));
+			left_motors.move((int)(-1*master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent));
+			right_motors.move((int)(master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent));
 		}
 
 		if (master.get_digital_new_press(DIGITAL_Y)) { //reverse toggle

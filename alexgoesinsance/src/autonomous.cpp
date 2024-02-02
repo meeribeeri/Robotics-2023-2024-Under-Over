@@ -36,6 +36,7 @@ void sright(double units, int volts);
 
 //auton functions for the actual auton stuff
 void offensiveAuton() { //shoot side
+	std::cout << "KAKAKHLEPAAAA";
 	left_motors.move(90);
 	right_motors.move(-90);
 	intake.move(90);
@@ -55,6 +56,7 @@ void offensiveAuton() { //shoot side
 }
 
 void defensiveAuton() { //net side
+	std::cout << "HLEPABBBBBA";
     //drive forward, push preload into net, grab another ball, push another into net
     //drive forward
     forward(1200);
@@ -76,13 +78,14 @@ void defensiveAuton() { //net side
 }
 
 void skillAuton() {
+	std::cout << "HLEPAAAA";
     setWings(false);
 	intake.move_relative(360,autonNormalSpeed);
 	for (int i = 0; i < 45; i++) {
-		catapult.move_relative(165*3,100);
-		pros::delay(700);
-		catapult.move_relative(15*3,100);
-		pros::delay(300);
+		catapult.move_relative(CATAPULT_INITIAL_SPIN,100);
+		pros::delay(850);
+		catapult.move_relative(CATAPULT_LAUNCH_SPIN,100);
+		pros::delay(150);
 	}
 	pros::delay(AUTON_COMMAND_DELAY);
     setWings(false);
