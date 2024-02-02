@@ -76,7 +76,8 @@ void defensiveAuton() { //net side
 }
 
 void skillAuton() {
-    setWings(true);
+    setWings(false);
+	intake.move_relative(360,autonNormalSpeed);
 	for (int i = 0; i < 45; i++) {
 		catapult.move_relative(165*3,100);
 		pros::delay(700);

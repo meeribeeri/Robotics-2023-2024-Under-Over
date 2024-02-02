@@ -26,6 +26,7 @@ bool intakeReady = false;
 bool manualCataControl = true;
 bool currentPistonState = false;
 int autonNumber = 0;
+bool isComp = false;
 
 void elevationWarning(void* param);
 
@@ -62,7 +63,7 @@ void initialize() {
 
 	pros::lcd::register_btn0_cb(autonChangeOffence);
 	pros::lcd::register_btn1_cb(autonChangeDefence);
-	pros::lcd::register_btn2_cb(autonChangeSkill);
+	//pros::lcd::register_btn2_cb(autonChangeSkill);
 
 	//port is from A-H, the bool is init state
 }
@@ -84,7 +85,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-
+	isComp = true;
 	//pros::lcd::register_btn0_cb
 }
 
@@ -102,18 +103,23 @@ void competition_initialize() {
 void autonomous() {
 	//use pros make, then pros upload --slot 2
 	//this is only for skill code, comp code use pros mut
-	switch (autonNumber) {
-		case 0:
-			offensiveAuton();
-			break;
-		case 1:
-			defensiveAuton();
-			break;
-		case 2:
-			skillAuton();
-			break;
-
+	//ignore the above two comments
+	//skillAuton();
+	/*if (isComp) {
+		switch (autonNumber) {
+			case 0:
+				offensiveAuton();
+				break;
+			case 1:
+				defensiveAuton();
+				break;
+		}
 	}
+	else {
+		skillAuton();
+	}*/
+
+	
 }
 
 /**
@@ -141,15 +147,15 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 
-		if (reverse) {
+		if (reverse) { //reverse drive
 			left_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent + 0.5));
 			right_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent + 0.5));
-		} else {
+		} else { //regular drive
 			left_motors.move((int)(-1*master.get_analog(ANALOG_LEFT_Y) * driveVoltagePercent));
 			right_motors.move((int)(master.get_analog(ANALOG_RIGHT_Y) * driveVoltagePercent));
 		}
 
-		if (master.get_digital_new_press(DIGITAL_Y)) {
+		if (master.get_digital_new_press(DIGITAL_Y)) { //reverse toggle
 			switch (reverse) {
 				case false:
 					reverse = true;
@@ -161,27 +167,27 @@ void opcontrol() {
 		}
 		
 
-		if (master.get_digital(DIGITAL_R1)) {
+		if (master.get_digital(DIGITAL_R1)) { //Outtake
 			intake.move(127);
 			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "IN" << std::endl;
-		} else if (master.get_digital(DIGITAL_L1)) {
-			intake.move(-127);
+		} else if (master.get_digital(DIGITAL_L1)) { //Intake
+			intake.move(-60);
 			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
-		} else {
+		} else { //Stop if no input
 			//intake.move(0);
 			intake.brake();
 			//std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
 		}
 
-		if (master.get_digital(DIGITAL_R2)) {
+		if (master.get_digital(DIGITAL_R2)) { //manual fire
 			catapult.move(127);
 			intakeReady = false;
 			manualCataControl = true;
-		} else if (manualCataControl) {
+		} else if (manualCataControl) { //no input stop
 			catapult.brake();
 		}
 		//pneumatics
-		if (master.get_digital_new_press(DIGITAL_L2)) {
+		if (master.get_digital_new_press(DIGITAL_L2)) { //wing toggle
 			switch (currentPistonState) {
 				case true:
 					currentPistonState = false;
@@ -194,27 +200,27 @@ void opcontrol() {
 		}
 
 		//launch Buttons
-		if (master.get_digital_new_press(DIGITAL_A)) {
-			if (!intakeReady) {
+		if (master.get_digital_new_press(DIGITAL_A)) { 
+			if (!intakeReady) {//prepare catapult to fire
 				manualCataControl = false;
 				intakeReady = true;
 				catapult.tare_position();
 				catapult.move_relative(CATAPULT_INITIAL_SPIN,200);
-			} else {
+			} else { //fire the catapult
 				catapult.tare_position();
 				catapult.move_relative(CATAPULT_LAUNCH_SPIN,100);
 				intakeReady = false;
 			}
 		}
 
-		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltagePercent < 1) {
+		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltagePercent < 1) { //increase maximum drive speed
 			driveVoltagePercent = driveVoltagePercent + 0.05;
 		}
 
-		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltagePercent > 0.05) {
+		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltagePercent > 0.05) { //decrease maximum drive speed
 			driveVoltagePercent = driveVoltagePercent - 0.05;
 		}
-		if (master.get_digital_new_press(DIGITAL_X)) {
+		if (master.get_digital_new_press(DIGITAL_X)) { //set maximum drive speed to 100% of possible speed
 			driveVoltagePercent = 1.00;
 		}
 		//neko miko reimu aishiteru
@@ -223,7 +229,7 @@ void opcontrol() {
 	}
 }
 
-void elevationWarning(void* param) {
+void elevationWarning(void* param) { //warn about getting to do elevation
 	pros::delay((60+35)*1000);
 	master.rumble("- -");
 	pros::delay(5*1000);
