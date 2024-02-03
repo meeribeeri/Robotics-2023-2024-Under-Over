@@ -25,8 +25,7 @@ double driveVoltagePercent = 1.00;
 bool intakeReady = false;
 bool manualCataControl = true;
 bool currentPistonState = false;
-int autonNumber = 0;
-bool isComp = false;
+int autonNumber = 2;
 
 void elevationWarning(void* param);
 
@@ -63,7 +62,7 @@ void initialize() {
 
 	pros::lcd::register_btn0_cb(autonChangeOffence);
 	pros::lcd::register_btn1_cb(autonChangeDefence);
-	//pros::lcd::register_btn2_cb(autonChangeSkill);
+	pros::lcd::register_btn2_cb(autonChangeSkill);
 
 	//port is from A-H, the bool is init state
 }
@@ -85,7 +84,7 @@ void disabled() {}
  * starts.
  */
 void competition_initialize() {
-	isComp = true;
+	autonNumber = 0;
 	std::cout << "HLEP";
 	//pros::lcd::register_btn0_cb
 }
@@ -105,24 +104,21 @@ void autonomous() {
 	//use pros make, then pros upload --slot 2
 	//this is only for skill code, comp code use pros mut
 	//ignore the above two comments
-	skillAuton();
+	//skillAuton();
 	//offensiveAuton();
 	//defensiveAuton();
-	/*if (isComp) {
-		std::cout << "HLEP";
-		switch (autonNumber) {
-			case 0:
-				offensiveAuton();
-				break;
-			case 1:
-				defensiveAuton();
-				break;
-		}
+	std::cout << "HLEP";
+	switch (autonNumber) {
+		case 0:
+			offensiveAuton();
+			break;
+		case 1:
+			defensiveAuton();
+			break;
+		case 2:
+			skillAuton();
+			break;				
 	}
-	else {
-		std::cout << "HLEPAAAA";
-		skillAuton();
-	}*/
 
 	
 }
@@ -176,7 +172,7 @@ void opcontrol() {
 			intake.move(127);
 			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "IN" << std::endl;
 		} else if (master.get_digital(DIGITAL_L1)) { //Intake
-			intake.move(-60);
+			intake.move(-90);
 			//std::cout << master.get_digital(DIGITAL_R1) << " " << master.get_digital(DIGITAL_L1) << "OUT" << std::endl;
 		} else { //Stop if no input
 			//intake.move(0);
