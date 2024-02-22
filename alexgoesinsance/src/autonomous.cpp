@@ -83,28 +83,44 @@ void skillAuton() {
 	pros::delay(79813279832);
     setWings(false);
     //forward();
-    sleft(MOTOR_RIGHT_TURN / 2);
-	pros::delay(AUTON_COMMAND_DELAY);
-    forward(-3000);
-	pros::delay(AUTON_COMMAND_DELAY);
-	sright(MOTOR_RIGHT_TURN);
-	pros::delay(AUTON_COMMAND_DELAY);
-	forward(720);
-	pros::delay(AUTON_COMMAND_DELAY);
-	sleft(MOTOR_RIGHT_TURN);
-	pros::delay(AUTON_COMMAND_DELAY);
-	forward(1500);
-	pros::delay(AUTON_COMMAND_DELAY);
-	sright(MOTOR_RIGHT_TURN);
-	pros::delay(AUTON_COMMAND_DELAY);
-    setWings(true);
-    left_motors.move(100);
-	right_motors.move(60);
+	forward(-100);
 	pros::delay(1000);
-	left_motors.brake();
-	right_motors.brake();
-	pros::delay(AUTON_COMMAND_DELAY);
-	forward(1500);
+    forward(1800);
+	pros::delay(1500);
+	sright(MOTOR_RIGHT_TURN/2);
+	pros::delay(500);
+	forward(1800);
+	pros::delay(1000);
+	setWings(true);
+	forward(1800);
+	pros::delay(1800);
+	setWings(false);
+	forward(-1800);
+	pros::delay(1000);
+	setWings(true);
+	forward(1800);
+	pros::delay(1800);
+	setWings(false);
+	forward(-1800);
+	pros::delay(1800);
+	sleft(MOTOR_RIGHT_TURN/2);
+	pros::delay(500);
+	forward(3600);
+	pros::delay(1500);
+	sright(MOTOR_RIGHT_TURN/2);
+	pros::delay(500);
+	setWings(true);
+	forward(2000);
+	pros::delay(1500);
+	forward(-2000);
+	setWings(false);
+	pros::delay(1500);
+	pros::delay(500);
+	setWings(true);
+	forward(2000);
+	
+
+
 	//drive to the side entrance & push as many balls as possible in
 }
 
