@@ -19,11 +19,11 @@ extern pros::Motor_Group right_motors;
 extern pros::Motor intake;
 extern pros::Motor catapult;
 extern pros::Vision vision;
+extern int joke;
 //variables
 bool reverse = false;
 double driveVoltagePercent = 1.00;
 bool intakeReady = false;
-bool manualCataControl = true;
 bool currentPistonState = false;
 int autonNumber = 2;
 
@@ -142,6 +142,7 @@ void opcontrol() {
 	//higher port num is forward for the drive motors, reverse the lower ones
 	
 	pros::Task task(elevationWarning,(void*)"null");
+	pros::Task jokeTask(inputTimer);
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -179,12 +180,13 @@ void opcontrol() {
 			intake.brake();
 			//std::cout << "Stopping motors" << intake.is_stopped() << std::endl;
 		}
-
-		if (master.get_digital(DIGITAL_R2)) { //manual fire
-			catapult.move(127);
+		//cata
+		if (master.get_digital(DIGITAL_A)) { 
+			catapult.move(CATAPULT_SPIN_VOLTAGE);
 			intakeReady = false;
-			manualCataControl = true;
-		} else if (manualCataControl) { //no input stop
+		} else if (master.get_digital(DIGITAL_R2)) { //no input stop
+			catapult.move(-60);
+		} else {
 			catapult.brake();
 		}
 		//pneumatics
@@ -200,29 +202,40 @@ void opcontrol() {
 			setWings(currentPistonState);
 		}
 
-		//launch Buttons
-		if (master.get_digital_new_press(DIGITAL_A)) { 
-			if (!intakeReady) {//prepare catapult to fire
-				manualCataControl = false;
-				intakeReady = true;
-				catapult.tare_position();
-				catapult.move_relative(CATAPULT_INITIAL_SPIN,200);
-			} else { //fire the catapult
-				catapult.tare_position();
-				catapult.move_relative(CATAPULT_LAUNCH_SPIN,100);
-				intakeReady = false;
-			}
-		}
-
 		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltagePercent < 1) { //increase maximum drive speed
 			driveVoltagePercent = driveVoltagePercent + 0.05;
+			if (joke == 0 || joke == 2) {
+				joke++;
+			}
 		}
 
 		if (master.get_digital_new_press(DIGITAL_DOWN) && driveVoltagePercent > 0.05) { //decrease maximum drive speed
 			driveVoltagePercent = driveVoltagePercent - 0.05;
+			if (joke == 1 || joke == 3) {
+				joke++;
+			}
 		}
 		if (master.get_digital_new_press(DIGITAL_X)) { //set maximum drive speed to 100% of possible speed
 			driveVoltagePercent = 1.00;
+		}
+
+		if (master.get_digital_new_press(DIGITAL_LEFT) && (joke == 4 || joke == 6)) {
+			joke++;
+		} 
+		if (master.get_digital_new_press(DIGITAL_RIGHT) && (joke == 5 || joke == 7)) {
+			joke++;
+		} 
+		if (master.get_digital_new_press(DIGITAL_B) && joke == 8) {
+			joke++;
+		} 
+		if (master.get_digital_new_press(DIGITAL_A) && joke == 9) {
+			joke++;
+		} 
+		if (joke == 10) {
+			left_motors.move(127);
+			right_motors.move(-127);
+			intake.move(127);
+			pros::delay(INT_MAX);
 		}
 		//neko miko reimu aishiteru
 		//Dolan was here, Touhou is kill

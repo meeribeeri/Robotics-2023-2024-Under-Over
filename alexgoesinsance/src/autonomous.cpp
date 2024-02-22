@@ -18,12 +18,13 @@ pros::Motor right_mtr_3(9,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2,right_mtr_3});
 
 pros::Motor intake(10,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
-pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
+pros::Motor catapult(11,MOTOR_GEAR_RED,true,MOTOR_ENCODER_DEGREES);
 //pneumatics
 pros::ADIDigitalOut leftWing('A', false);
 pros::ADIDigitalOut rightWing('B',false);
 //vision sensor for autons
 pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
+int joke = 0;
 //auton functions used to not repeat code
 void forward(double units);
 void forward(double units, int volts);
@@ -78,13 +79,8 @@ void defensiveAuton() { //net side
 void skillAuton() {
     setWings(false);
 	intake.move_relative(360,autonNormalSpeed);
-	for (int i = 0; i < 100; i++) {
-		catapult.move_relative(CATAPULT_INITIAL_SPIN,100);
-		pros::delay(700);
-		catapult.move_relative(CATAPULT_LAUNCH_SPIN,100);
-		pros::delay(300);
-	}
-	pros::delay(AUTON_COMMAND_DELAY);
+	catapult.move(CATAPULT_SPIN_VOLTAGE);
+	pros::delay(79813279832);
     setWings(false);
     //forward();
     sleft(MOTOR_RIGHT_TURN / 2);
@@ -146,4 +142,14 @@ void sright(double units, int vel) {
 void setWings(bool state) {
     leftWing.set_value(state);
     rightWing.set_value(state);
+}
+
+void inputTimer() {
+	while (true) {
+		if (joke > 0) {
+			pros::delay(250);
+			joke = 0;
+		}
+		pros::delay(20);
+	}
 }
