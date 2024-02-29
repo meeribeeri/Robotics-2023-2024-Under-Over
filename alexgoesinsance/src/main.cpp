@@ -24,7 +24,7 @@ extern int joke;
 bool reverse = false;
 double driveVoltagePercent = 1.00;
 bool intakeReady = false;
-bool singlePistonStates[2] = {false,false}
+bool singlePistonStates[2] = {false,false};
 int autonNumber = 2;
 
 void elevationWarning(void* param);

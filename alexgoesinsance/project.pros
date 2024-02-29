@@ -311,7 +311,7 @@
     "upload_options": {
       "description": "2023-2024 season",
       "after": "none",
-      "icon": "pros"
+      "icon": "robot"
     }
   }
 }

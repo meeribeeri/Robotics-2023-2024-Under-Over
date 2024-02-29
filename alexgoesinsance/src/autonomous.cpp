@@ -23,7 +23,7 @@ pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
 pros::ADIDigitalOut leftWing('A', false);
 pros::ADIDigitalOut rightWing('B',false);
 //vision sensor for autons
-pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
+//pros::Vision vision(20,pros::E_VISION_ZERO_CENTER);
 int joke = 0;
 //auton functions used to not repeat code
 void forward(double units);
@@ -86,7 +86,7 @@ void skillAuton() {
 	//drive to the middle beam
 	forward(3600);
 	pros::delay(1000);
-	sright(3 * MOTOR_RIGHT_TURN + MOTOR_RIGHT_TURN/2);
+	sleft(MOTOR_RIGHT_TURN/2);
 	//push triballs to the side
 	setRightWings(true);
 	forward(3600);
