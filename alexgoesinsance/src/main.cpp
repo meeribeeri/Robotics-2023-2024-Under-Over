@@ -24,7 +24,7 @@ extern int joke;
 bool reverse = false;
 double driveVoltagePercent = 1.00;
 bool intakeReady = false;
-bool currentPistonState = false;
+bool singlePistonStates[2] = {false,false}
 int autonNumber = 2;
 
 void elevationWarning(void* param);
@@ -85,7 +85,6 @@ void disabled() {}
  */
 void competition_initialize() {
 	autonNumber = 0;
-	std::cout << "HLEP";
 	//pros::lcd::register_btn0_cb
 }
 
@@ -107,7 +106,6 @@ void autonomous() {
 	//skillAuton();
 	//offensiveAuton();
 	//defensiveAuton();
-	std::cout << "HLEP";
 	switch (autonNumber) {
 		case 0:
 			offensiveAuton();
@@ -191,15 +189,48 @@ void opcontrol() {
 		}
 		//pneumatics
 		if (master.get_digital_new_press(DIGITAL_L2)) { //wing toggle
-			switch (currentPistonState) {
+			switch (singlePistonStates[0]) {
 				case true:
-					currentPistonState = false;
+					singlePistonStates[0] = false;
+					singlePistonStates[1] = false;
 					break;
 				case false:
-					currentPistonState = true;
+					singlePistonStates[0] = true;
+					singlePistonStates[1] = true;
 					break;
 			}
-			setWings(currentPistonState);
+			setLeftWings(singlePistonStates[0]);
+			setRightWings(singlePistonStates[1]);
+		}
+
+		if (master.get_digital_new_press(DIGITAL_LEFT)) {
+			switch (singlePistonStates[0]) {
+				case true:
+					singlePistonStates[0] = false;
+					break;
+				case false:
+					singlePistonStates[0] = true;
+					break;
+			}
+			setLeftWings(singlePistonStates[0]);
+			if (joke == 4 || joke == 6) {
+				joke++;
+			}
+		}
+
+		if (master.get_digital_new_press(DIGITAL_RIGHT)) {
+			switch (singlePistonStates[1]) {
+				case true:
+					singlePistonStates[1] = false;
+					break;
+				case false:
+					singlePistonStates[1] = true;
+					break;
+			}
+			setLeftWings(singlePistonStates[1]);
+			if (joke == 5 || joke == 7) {
+				joke++;
+			}
 		}
 
 		if (master.get_digital_new_press(DIGITAL_UP) && driveVoltagePercent < 1) { //increase maximum drive speed
@@ -218,13 +249,6 @@ void opcontrol() {
 		if (master.get_digital_new_press(DIGITAL_X)) { //set maximum drive speed to 100% of possible speed
 			driveVoltagePercent = 1.00;
 		}
-
-		if (master.get_digital_new_press(DIGITAL_LEFT) && (joke == 4 || joke == 6)) {
-			joke++;
-		} 
-		if (master.get_digital_new_press(DIGITAL_RIGHT) && (joke == 5 || joke == 7)) {
-			joke++;
-		} 
 		if (master.get_digital_new_press(DIGITAL_B) && joke == 8) {
 			joke++;
 		} 

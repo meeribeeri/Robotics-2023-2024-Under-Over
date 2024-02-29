@@ -18,7 +18,7 @@ pros::Motor right_mtr_3(9,MOTOR_GEAR_BLUE,1,MOTOR_ENCODER_DEGREES);
 pros::Motor_Group right_motors({right_mtr_1,right_mtr_2,right_mtr_3});
 
 pros::Motor intake(10,MOTOR_GEAR_GREEN,false,MOTOR_ENCODER_DEGREES);
-pros::Motor catapult(11,MOTOR_GEAR_RED,true,MOTOR_ENCODER_DEGREES);
+pros::Motor catapult(11,MOTOR_GEAR_RED,false,MOTOR_ENCODER_DEGREES);
 //pneumatics
 pros::ADIDigitalOut leftWing('A', false);
 pros::ADIDigitalOut rightWing('B',false);
@@ -80,45 +80,69 @@ void skillAuton() {
     setWings(false);
 	intake.move_relative(360,autonNormalSpeed);
 	catapult.move(CATAPULT_SPIN_VOLTAGE);
-	pros::delay(79813279832);
+	pros::delay(42*1000);
     setWings(false);
     //forward();
-	forward(-100);
-	pros::delay(1000);
-    forward(1800);
-	pros::delay(1500);
-	sright(MOTOR_RIGHT_TURN/2);
-	pros::delay(500);
-	forward(1800);
-	pros::delay(1000);
-	setWings(true);
-	forward(1800);
-	pros::delay(1800);
-	setWings(false);
-	forward(-1800);
-	pros::delay(1000);
-	setWings(true);
-	forward(1800);
-	pros::delay(1800);
-	setWings(false);
-	forward(-1800);
-	pros::delay(1800);
-	sleft(MOTOR_RIGHT_TURN/2);
-	pros::delay(500);
+	//drive to the middle beam
 	forward(3600);
-	pros::delay(1500);
-	sright(MOTOR_RIGHT_TURN/2);
+	pros::delay(1000);
+	sright(3 * MOTOR_RIGHT_TURN + MOTOR_RIGHT_TURN/2);
+	//push triballs to the side
+	setRightWings(true);
+	forward(3600);
+	pros::delay(750);
+	forward(-720);
 	pros::delay(500);
+	forward(720);
+	pros::delay(500);
+	forward(-720);
+	setRightWings(false);
+	pros::delay(500);
+	sleft(MOTOR_RIGHT_TURN);
+	forward(1000);
+	pros::delay(750);
+	sright(MOTOR_RIGHT_TURN);
+	forward(720);
+	pros::delay(750);
+	sright(MOTOR_RIGHT_TURN);
+	forward(1500);
+	sright(MOTOR_RIGHT_TURN);
 	setWings(true);
-	forward(2000);
-	pros::delay(1500);
-	forward(-2000);
+	forward(1500);
+	pros::delay(1000);
 	setWings(false);
-	pros::delay(1500);
-	pros::delay(500);
+	sright(MOTOR_RIGHT_TURN);
+	forward(1200);
+	pros::delay(1000);
+	sleft(MOTOR_RIGHT_TURN);
+	forward(750);
+	pros::delay(750);
+	sleft(MOTOR_RIGHT_TURN);
 	setWings(true);
 	forward(2000);
-	
+	pros::delay(1000);
+	forward(-1000);
+	pros::delay(750);
+	forward(1000);
+	pros::delay(1000);
+	forward(-1000);
+	pros::delay(750);
+	//curved turn
+	setRightWings(false);
+	left_motors.move(80);
+	right_motors.move(120);
+	pros::delay(1250);
+	left_motors.brake();
+	right_motors.brake();
+	pros::delay(AUTON_COMMAND_DELAY);
+	setRightWings(true);
+	//sleft(MOTOR_RIGHT_TURN/3);
+	//sright(MOTOR_RIGHT_TURN/3);
+	forward(1000);
+	pros::delay(750);
+	forward(-1000);
+	pros::delay(750);
+	forward(1000);
 
 
 	//drive to the side entrance & push as many balls as possible in
@@ -138,27 +162,40 @@ void forward(double units, int vel) {
 void sleft(double units) {
 	left_motors.move_relative(units, autonNormalSpeed);
 	right_motors.move_relative(units,autonNormalSpeed);
+	pros::delay(300);
 }
 
 void sleft(double units, int vel) {
 	left_motors.move_relative(units, vel);
 	right_motors.move_relative(units,vel);
+	pros::delay(300);
 }
 
 void sright(double units) {
 	left_motors.move_relative(-units, autonNormalSpeed);
 	right_motors.move_relative(-units,autonNormalSpeed);
+	pros::delay(300);
 }
 
 void sright(double units, int vel) {
 	left_motors.move_relative(-units, vel);
 	right_motors.move_relative(-units,vel);
+	pros::delay(300);
 }
 
 void setWings(bool state) {
     leftWing.set_value(state);
     rightWing.set_value(state);
 }
+
+void setLeftWings(bool state) {
+	leftWing.set_value(state);
+}
+
+void setRightWings(bool state) {
+	rightWing.set_value(state);
+}
+
 
 void inputTimer() {
 	while (true) {
